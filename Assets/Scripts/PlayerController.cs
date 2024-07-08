@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
+        rb2d.gravityScale = 0f;
     }
 
     // Update is called once per frame
@@ -28,14 +29,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
-        {
-            float knockBack = Input.GetAxis("Vertical");
-            transform.position = Vector2.MoveTowards(
-                transform.position,
-                new Vector2(transform.position.x, transform.position.y / 5),
-                speed / 5 * Time.deltaTime);
-        }
+        // Assuming 'speed' is a field that controls the knockback speed
+        float knockBackForce = Input.GetAxis("Vertical") * speed;
+
+        // Apply the knockback force in the opposite direction of the collision
+        Vector2 knockBackDirection = -collision.GetContact(0).normal * knockBackForce;
+
+        // Use Rigidbody2D to move the paddle instead of directly setting transform.position
+        rb2d.velocity = knockBackDirection;
     }
 
 }
