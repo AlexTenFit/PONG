@@ -2,6 +2,11 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+.idea/
+Assets/Plugins/Editor/JetBrains*
+Assets/AssetStoreTools*
+.vscode/
+
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -52,7 +57,7 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
-# Unity3D generated file on crash reports
+# Unity3D Generated File On Crash Reports
 sysinfo.txt
 
 # Builds
@@ -70,3 +75,5 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# End of https://www.gitignore.io/api/unity
