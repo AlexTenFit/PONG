@@ -1,11 +1,9 @@
-using System;
-using System.Numerics;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector2 = UnityEngine.Vector2;
 
-public class ballMovement : MonoBehaviour
+public class BallMovement : MonoBehaviour
 {
     private static readonly float[] X_DIR_OPTS = { -1.0f, 1.0f };
 
@@ -34,37 +32,42 @@ public class ballMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // maintain velocity base constant
         _velocity = _velocity.normalized * ballSpeed;
         _ballRb.linearVelocity = _velocity;
-        
-        Debug.DrawRay(transform.position, _ballRb.linearVelocity, Color.green);
+
+        if (debug)
+        {
+            Debug.DrawRay(transform.position, _ballRb.linearVelocity, Color.green);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("paddle"))
+        if (!other.gameObject.CompareTag("paddle")) return;
+
+        ballSpeed *= ballAccel;
+
+        /* Formula for bouncing off of things:
+         *
+         *     r = d - 2 * (d . n)n
+         *
+         * where r: relected vector
+         *       d: incident vector
+         *       n: normal vector of surface at point of impact */
+
+
+        foreach (var contact in other.contacts)
         {
-            ballSpeed *= ballAccel;
-            
-            /* Formula for bouncing off of things:
-             *
-             *     r = d - 2 * (d . n)n
-             *
-             * where r: relected vector
-             *       d: incident vector
-             *       n: normal vector of surface at point of impact */
-            
-            
-            foreach (var contact in other.contacts)
-            {
-                Debug.DrawRay(contact.point, contact.normal, Color.red, 10);
+            if (debug) Debug.DrawRay(contact.point, contact.normal, Color.red, 10);
 
-                var d = _velocity;
-                var n = contact.normal;
-                var r = d - (2 * Vector2.Dot(d, n) * n);
+            var d = _velocity;
+            var n = contact.normal;
+            var r = d - (2 * Vector2.Dot(d, n) * n);
 
-                _velocity = r;
-            }
+            _velocity = r;
         }
+
+        if (debug) Debug.Log("current velocity: " + _velocity);
     }
 }
