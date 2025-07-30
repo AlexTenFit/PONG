@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Composites;
 
 public class MovePaddle : MonoBehaviour
 {
@@ -18,9 +17,14 @@ public class MovePaddle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var moveAmount = _movePaddle.ReadValue<Vector2>() * Time.deltaTime;
-        if (debug) print("Move vector: " + moveAmount);
+        var moveDir = _movePaddle.ReadValue<Vector2>();
+        var moveAmount = moveDir * Time.deltaTime;
+        if (debug)
+        {
+            Debug.Log("Move vector: " + moveAmount);
+            Debug.DrawRay(transform.position, moveDir * 3, Color.green);
+        }
         
-        transform.position = new Vector2(transform.position.x, transform.position.y + (moveAmount.y * paddleSpeed));
+        transform.position = new Vector2(transform.position.x, transform.position.y + (moveAmount.y * paddleSpeed * Time.deltaTime));
     }
 }

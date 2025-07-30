@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -7,8 +8,9 @@ public class BallMovement : MonoBehaviour
 {
     private static readonly float[] X_DIR_OPTS = { -1.0f, 1.0f };
 
-    [SerializeField] private float ballSpeed = 1f;
+    [SerializeField] public float ballSpeed = 1f;
     [SerializeField] private float ballAccel = 0.01f;
+    [SerializeField] private float ballMaxSpeed = 10f;
 
     private float _xDirection = 0f;
     private float _yDirection = 0f;
@@ -44,9 +46,14 @@ public class BallMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (!other.gameObject.CompareTag("paddle")) return;
-
-        ballSpeed *= ballAccel;
+        if (other.gameObject.CompareTag("paddle") && ballSpeed < ballMaxSpeed) 
+        {
+            ballSpeed *= 1 + ballAccel;
+            if (debug) Debug.Log("new ball speed: " + ballSpeed);
+        } else if (ballSpeed > ballMaxSpeed)
+        {
+            ballSpeed = ballMaxSpeed;
+        }
 
         /* Formula for bouncing off of things:
          *
@@ -59,7 +66,7 @@ public class BallMovement : MonoBehaviour
 
         foreach (var contact in other.contacts)
         {
-            if (debug) Debug.DrawRay(contact.point, contact.normal, Color.red, 10);
+            if (debug) Debug.DrawRay(contact.point, contact.normal, Color.red, 3);
 
             var d = _velocity;
             var n = contact.normal;
@@ -69,5 +76,13 @@ public class BallMovement : MonoBehaviour
         }
 
         if (debug) Debug.Log("current velocity: " + _velocity);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("bound"))
+        {
+            Application.Quit();
+        }
     }
 }
